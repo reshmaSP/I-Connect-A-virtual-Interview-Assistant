@@ -1,5 +1,4 @@
 import React from "react";
-import Container from "react-bootstrap/esm/Container";
 
 const Offcanvas = ({handleShow, show, handleClose}) => {
   return (

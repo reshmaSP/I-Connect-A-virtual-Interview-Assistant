@@ -4,7 +4,6 @@ import { useSocket } from "../context/SocketProvider";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import classes from "./Lobby.module.css";
 
 const LobbyScreen = () => {
   const [email, setEmail] = useState("");
