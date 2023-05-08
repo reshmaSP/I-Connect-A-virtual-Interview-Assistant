@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useState } from "react";
-import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
 import Container from "react-bootstrap/esm/Container";
@@ -7,10 +6,15 @@ import Button from "react-bootstrap/esm/Button";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/Col";
 // import { useParams } from "react-router-dom";
-import Form from "react-bootstrap/Form";
 // import Offcanvas from "./Offcanvas";
-import Navbar from "react-bootstrap/Navbar";
+// import Navbar from "react-bootstrap/Navbar";
 import { useLocation } from "react-router-dom";
+import { useReactMediaRecorder } from "react-media-recorder";
+// Importing Custom Components
+import Footer from "./Footer";
+import Chat from "./Chat";
+import BlankScreen from "./BlankScreen";
+import VideoPlayer from "./VideoPlayer";
 
 const RoomPage = () => {
   const { search } = useLocation();
@@ -28,18 +32,28 @@ const RoomPage = () => {
   const [camOn, setCamon] = useState(false);
   const [remoteCamstatus, setRemotecamstatus] = useState(false);
   const [remoteMikestatus, setRemoteMikestatus] = useState(false);
-
+  const [recording, setRecording] = useState(null);
 
   const handleUserCameraStream = useCallback(() => {
     let state = !camOn;
     setCamon(!camOn);
-    socket.emit("user-cam-status", {camStatus: state, remoteID: remoteSocketId});
+    socket.emit("user-cam-status", {
+      camStatus: state,
+      remoteID: remoteSocketId,
+    });
   });
+
+  const setRecordingURL = (url) => {
+    setRecording(url);
+  }
 
   const handleUserMikeStream = useCallback(() => {
     let state = !micOn;
     setMicon(!micOn);
-    socket.emit("user-mike-status", {mikeStatus: state, remoteID: remoteSocketId});
+    socket.emit("user-mike-status", {
+      mikeStatus: state,
+      remoteID: remoteSocketId,
+    });
   });
 
   const handleUserJoined = useCallback(({ email, id }) => {
@@ -95,12 +109,12 @@ const RoomPage = () => {
     socket.emit("send-message-to-room", { msg: message, roomId: roomId });
   };
 
-  function handleRemotecamStatus(camStatus){
-    setRemotecamstatus(camStatus)
+  function handleRemotecamStatus(camStatus) {
+    setRemotecamstatus(camStatus);
   }
 
-  function handleRemotemikeStatus(mikeStatus){
-    setRemoteMikestatus(mikeStatus)
+  function handleRemotemikeStatus(mikeStatus) {
+    setRemoteMikestatus(mikeStatus);
   }
 
   const handleReceiveMessage = useCallback((data) => {
@@ -156,9 +170,8 @@ const RoomPage = () => {
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
     socket.on("receive-incoming-message", handleReceiveMessage);
-    socket.on("remote-cam-status", handleRemotecamStatus)
-    socket.on("remote-mike-status", handleRemotemikeStatus)
-    
+    socket.on("remote-cam-status", handleRemotecamStatus);
+    socket.on("remote-mike-status", handleRemotemikeStatus);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -167,9 +180,8 @@ const RoomPage = () => {
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
       socket.off("receive-incoming-message", handleReceiveMessage);
-      socket.off("remote-cam-status", handleRemotecamStatus)
-    socket.off("remote-mike-status", handleRemotemikeStatus)
-
+      socket.off("remote-cam-status", handleRemotecamStatus);
+      socket.off("remote-mike-status", handleRemotemikeStatus);
     };
   }, [
     socket,
@@ -180,7 +192,7 @@ const RoomPage = () => {
     handleNegoNeedFinal,
     handleReceiveMessage,
     handleRemotecamStatus,
-    handleRemotemikeStatus
+    handleRemotemikeStatus,
   ]);
 
   return (
@@ -198,50 +210,10 @@ const RoomPage = () => {
       }}
     >
       {/* <Button onClick={handleShow}>Chat</Button> */}
-      <Container>
-        <Navbar expand="lg" variant="light" bg="secondary" fixed="bottom">
-          <Container style={{ justifyContent: "center" }}>
-            {!micOn && (
-              <span
-                class="material-symbols-outlined"
-                onClick={handleUserMikeStream}
-              >
-                mic
-              </span>
-            )}
-            {micOn && (
-              <span
-                class="material-symbols-outlined"
-                onClick={handleUserMikeStream}
-              >
-                mic_off
-              </span>
-            )}
-            {!camOn && (
-              <span
-                class="material-symbols-outlined"
-                style={{ marginLeft: "3%" }}
-                onClick={handleUserCameraStream}
-              >
-                videocam_off
-              </span>
-            )}
-            {camOn && (
-              <span
-                class="material-symbols-outlined"
-                style={{ marginLeft: "3%" }}
-                onClick={handleUserCameraStream}
-              >
-                videocam
-              </span>
-            )}
-          </Container>
-        </Navbar>
-      </Container>
       {/* <Offcanvas handleShow={handleShow} show={show} handleClose={handleClose}></Offcanvas> */}
-      console.log("Message state is" + ${message})
-      console.log("Remote Cam state is" + ${remoteCamstatus})
-
+      console.log("Message state is" + ${message}) console.log("Remote Cam state
+      is" + ${remoteCamstatus})
+      console.log("Recording URL state is" + ${recording})
       <h1 style={{ marginTop: "1%", color: "green" }}>Room Page</h1>
       <h2 style={{ marginBottom: "2%", color: "green" }}>
         {remoteSocketId ? "Connected" : "No one in room"}
@@ -257,25 +229,15 @@ const RoomPage = () => {
           {remoteStream && (
             <>
               <h1 style={{ color: "green" }}>Remote Stream</h1>
-              {!remoteCamstatus && (
-                <div
-                  style={{
-                    backgroundColor: "White",
-                    height: "450px",
-                    width: "100%",
-                  }}
-                ></div>
-              )}
+              {!remoteCamstatus && <BlankScreen />}
 
-              {remoteCamstatus && <ReactPlayer
-                fluid
-                playing
-                muted={remoteMikestatus}
-                height={"450px"}
-                width={"100%"}
-                style={{}}
-                url={remoteStream}
-              />}
+              {remoteCamstatus && (
+                <VideoPlayer
+                  play={true}
+                  micStatus={remoteMikestatus}
+                  stream={remoteStream}
+                />
+              )}
             </>
           )}
         </Col>
@@ -283,50 +245,26 @@ const RoomPage = () => {
           {myStream && (
             <>
               <h1 style={{ color: "green" }}>My Stream</h1>
-              {!camOn && (
-                <div
-                  style={{
-                    backgroundColor: "White",
-                    height: "450px",
-                    width: "100%",
-                  }}
-                ></div>
-              )}
+              {!camOn && <BlankScreen />}
 
               {camOn && (
-                <ReactPlayer
-                  playing={true}
-                  muted={micOn}
-                  height={"450px"}
-                  width={"100%"}
-                  style={{
-                    justifySelf: "center",
-                  }}
-                  url={myStream}
-                />
+                <VideoPlayer play={true} micStatus={micOn} stream={myStream} />
               )}
             </>
           )}
         </Col>
       </Row>
       <Row>
-        <Form onSubmit={handleSendMessage} style={{ paddingTop: "2%" }}>
-          <Col>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Control
-                type="text"
-                placeholder="Enter message"
-                name="message"
-              />
-            </Form.Group>
-          </Col>
-          <Col>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
-          </Col>
-        </Form>
+        <Chat handleSendMessage={handleSendMessage} />
       </Row>
+      {/* Footer Starts Here */}
+      <Footer
+        micOn={micOn}
+        handleUserMikeStream={handleUserMikeStream}
+        camOn={camOn}
+        handleUserCameraStream={handleUserCameraStream}
+        setRecordingURL={setRecordingURL}
+      />
     </Container>
   );
 };
