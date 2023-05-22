@@ -25,6 +25,9 @@ export default function NavigBar() {
             <LinkContainer to="/about">
               <Nav.Link>About us</Nav.Link>
             </LinkContainer>
+            <LinkContainer to="/register">
+              <Nav.Link>Register</Nav.Link>
+            </LinkContainer>
           </Nav>
         </Navbar.Collapse>
       </Navbar>

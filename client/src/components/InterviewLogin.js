@@ -2,15 +2,46 @@ import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
-import { Col, Row } from "react-bootstrap";
+import { Col, Modal, Row } from "react-bootstrap";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { app } from "../screens/firebase";
 
+
+const auth =getAuth(app);
 const InterviewerLogin = () => {
   const [email, setEmail] = useState("");
-  const [room, setRoom] = useState("");
+  const [password, setPassword] = useState("");
+  const [modalShow, setModalShow] = React.useState(false);
 
+
+  const Register=()=>{
+    // alert("registering");
+    return (
+      <>
+        <Button variant="primary" onClick={() => setModalShow(true)}>
+          Launch vertically centered modal
+        </Button>
+  
+        <Modal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+        />
+      </>
+    );
+  }
+  const signinUser=()=>{
+    signInWithEmailAndPassword(auth,email,password).then((value)=>{
+      alert("successfully signed in");
+    })
+    .catch(()=>{
+      alert("Invalid username or password");
+    })
+  }
   const handleSubmitForm = (event) => {
     event.preventDefault();
+    signinUser();
   };
+
 
   return (
     <Container
@@ -39,7 +70,7 @@ const InterviewerLogin = () => {
       </h1>
       <hr style={{ marginLeft: "15%", marginRight: "15%", color: "black"}}></hr>
       <Form
-        onSubmit={handleSubmitForm}
+        // onSubmit={handleSubmitForm}
         style={{
           marginBottom: "5%",
           marginLeft: "20%",
@@ -49,9 +80,9 @@ const InterviewerLogin = () => {
         }}
       >
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label><b>Enter Username</b></Form.Label>
+          <Form.Label><b>Enter Email</b></Form.Label>
           <Form.Control
-            type="text"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Username"
@@ -63,8 +94,8 @@ const InterviewerLogin = () => {
           <Form.Control
             type="text"
             id="room"
-            value={room}
-            onChange={(e) => setRoom(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
         </Form.Group>
@@ -74,22 +105,26 @@ const InterviewerLogin = () => {
             variant="success"
             type="submit"
             style={{ marginTop: "4%" }}
+            onClick={handleSubmitForm}
           >
             Login
           </Button>
         </Col>
+        </Row>
         <Col>
           <Button
             variant="success"
             type="submit"
             style={{ marginTop: "4%" }}
+            onClick={Register}
           >
             Sign up
           </Button>
         </Col>
-        </Row>
         
-      </Form>
+        </Form>
+
+      
     </Container>
   );
 };
