@@ -2,7 +2,7 @@ const BlankScreen = () => {
   return (
     <div
       style={{
-        backgroundColor: "White",
+        backgroundColor: "grey",
         height: "450px",
         width: "100%",
       }}

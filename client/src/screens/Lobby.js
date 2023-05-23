@@ -49,7 +49,7 @@ const LobbyScreen = () => {
       <h1 style={{ marginBottom: "2%", marginTop: "5%", color: "green" }}>
         Welcome to Interview Assistant Lobby
       </h1>
-      <hr style={{marginLeft: "15%", marginRight: "15%"}}></hr>
+      <hr style={{ marginLeft: "15%", marginRight: "15%" }}></hr>
       <Form
         onSubmit={handleSubmitForm}
         style={{
@@ -80,7 +80,11 @@ const LobbyScreen = () => {
             placeholder="Room No"
           />
         </Form.Group>
-        <Button variant="outline-success" type="submit" style={{marginTop: "4%"}}>
+        <Button
+          variant="outline-success"
+          type="submit"
+          style={{ marginTop: "4%" }}
+        >
           JOIN
         </Button>
       </Form>

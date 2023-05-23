@@ -36,21 +36,47 @@ io.on("connection", (socket) => {
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
 
-  socket.on("user-cam-status", ({camStatus, remoteID}) => {
-    console.log("user cam status received as "+camStatus+" remote socket ID: "+remoteID);
+  socket.on("user-cam-status", ({ camStatus, remoteID }) => {
+    console.log(
+      "user cam status received as " +
+        camStatus +
+        " remote socket ID: " +
+        remoteID
+    );
     io.to(remoteID).emit("remote-cam-status", camStatus);
-  })
+  });
 
-  socket.on("user-mike-status", ({mikeStatus, remoteID}) => {
-    console.log("user Mike status received as "+mikeStatus+" remote socket ID: "+remoteID);
+  socket.on("user-mike-status", ({ mikeStatus, remoteID }) => {
+    console.log(
+      "user Mike status received as " +
+        mikeStatus +
+        " remote socket ID: " +
+        remoteID
+    );
     io.to(remoteID).emit("remote-mike-status", mikeStatus);
-  })
-
+  });
 
   socket.on("send-message-to-room", (data) => {
-    const {msg, roomId} = data;
-    console.log("receive-incoming-message "+ msg +" from "+socket.id+" and room Id is "+roomId)
-    io.to(roomId).emit("receive-incoming-message", {from: socket.id, message: msg})
-  })
-
+    const { msg, roomId } = data;
+    console.log(
+      "receive-incoming-message " +
+        msg +
+        " from " +
+        socket.id +
+        " and room Id is " +
+        roomId
+    );
+    io.to(roomId).emit("receive-incoming-message", {
+      from: socket.id,
+      message: msg
+    });
+    console.log(
+      "message sent by server " +
+        msg +
+        " from " +
+        socket.id +
+        " room Id " +
+        roomId
+    );
+  });
 });
